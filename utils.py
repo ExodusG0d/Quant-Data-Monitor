@@ -1,21 +1,34 @@
-from bs4 import BeautifulSoup
-from datetime import datetime
-from zoneinfo import ZoneInfo
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from H5DataBase import H5DataBase
-from datetime import datetime
-from typing import Literal, List
 import requests
 import re
 import urllib.parse
 import json
 import uuid
+import sqlalchemy
+import pandas as pd
+import numpy as np
+from bs4 import BeautifulSoup
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from pathlib import Path
+from H5DataBase import H5DataBase
+from datetime import datetime
+from typing import Literal, List
 from typing import List
 from pyecharts.charts import Line
 from pyecharts import options as opts
 from pathlib import Path
+from config import SQL_PASSWORDS, SQL_HOST
+
+
+def connect_to_database():
+    """创建并返回数据库引擎"""
+    print("连接到数据库...")
+    # 数据库连接
+    engine = sqlalchemy.create_engine(
+        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/UpdatedData?charset=utf8"
+    )
+    return engine
+
 
 __all__ = [
     "load_bais",
@@ -361,6 +374,8 @@ def load_speed_of_indus(
 
 
 def load_speed_of_barra(cne5, end_date: np.datetime64 = None):
+    engine = connect_to_database()
+    cne5 = pd.read_sql_query("SELECT * FROM cne5", engine)
     if end_date:
         cne5 = cne5[cne5["日期"] <= end_date]
     cne5 = cne5.melt(id_vars=["日期"], var_name="barra", value_name="rtn").sort_values(
