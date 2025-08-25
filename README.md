@@ -28,3 +28,15 @@ html：
 
 - [ ] `index.html`
 - [ ] `bias.html`
+
+### `update_display.py` TODO
+
+- [ ] `utils.py`:
+    - [ ] load_hist_data_from_wind,
+    - [ ] load_bench_cons,
+    - [ ] calculate_percentile,
+    - [ ] plot_line_chart,
+    - [ ] plot_dual_y_line_chart,
+    - [ ] plot_lines_chart,
+    - [ ] load_speed_of_indus,
+    - [ ] load_speed_of_barra,
