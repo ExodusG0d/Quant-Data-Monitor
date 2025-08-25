@@ -232,7 +232,7 @@ def plot_lines_chart(
     range_end: int = 100,
     lower_bound: float = None,
     up_bound: float = None,
-):
+) -> Line:
     assert len(ys_data) == len(names), "Length of ys_data and names should be the same"
     line = Line(
         init_opts={

@@ -14,7 +14,6 @@ from utils import (
     load_speed_of_barra,
 )
 from window import rolling_mean
-from barra_data import BarraData
 from typing import List
 
 
@@ -420,7 +419,7 @@ if __name__ == "__main__":
                 table, th, td {{
                     border: 1px solid #ddd;
                     padding: 8px;
-                    text-align: center; 
+                    text-align: center;
                 }}
                 th {{
                     background-color: #f59e00;
