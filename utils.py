@@ -30,12 +30,12 @@ __all__ = [
     "load_speed_of_barra",
 ]
 
-def connect_to_database():
+def connect_to_database(db_name = "UpdatedData"):
     """创建并返回数据库引擎"""
-    print("连接到数据库...")
+    print(f"连接到数据库{db_name}...")
     # 数据库连接
     engine = sqlalchemy.create_engine(
-        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/UpdatedData?charset=utf8"
+        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/{db_name}?charset=utf8"
     )
     return engine
 
