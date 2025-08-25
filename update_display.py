@@ -118,6 +118,8 @@ if __name__ == "__main__":
         }
     )
 
+    # 各自绘图的大循环
+
     # Plot 指数成交金额（各自绘图，并包含分位数信息）
     print("Plot 指数成交金额(各自图)")
     for bench, name in {
@@ -148,40 +150,41 @@ if __name__ == "__main__":
             }
         )
 
-    #     # 计算成分股波动率
-    #     rtn = load_hist_data_from_wind(
-    #         indicator="PCT_CHG",
-    #         symols=load_bench_cons(bench),
-    #         end_date=END_DATE if END_DATE else np.datetime64("today"),
-    #     )
-    #     rtn /= 100
-    #     vol = rtn.std(axis=1).to_frame()
-    #     percentile = calculate_percentile(vol[0].values, 250)
-    #     weekly_mean_percentile = rolling_mean(percentile, 5).round(3)
-    #     display_dict.update(
-    #         {
-    #             f"{name}波动率分位数MA5": [
-    #                 weekly_mean_percentile[-1],
-    #                 weekly_mean_percentile[pat],
-    #             ]
-    #         }
-    #     )
-    #     combined_fig.update(
-    #         {
-    #             name: plot_lines_chart(
-    #                 x_data=vol.index.strftime("%Y-%m-%d")[249:],
-    #                 ys_data=[
-    #                     percentile,
-    #                     weekly_mean_percentile.round(3),
-    #                 ],
-    #                 names=[
-    #                     f"{name}成分股波动率分位数",
-    #                     f"{name}成分股波动率分位数MA5",
-    #                 ],
-    #                 range_start=75,
-    #             )
-    #         }
-    #     )
+        # # 计算各自成分股波动率
+        # rtn = load_hist_data_from_wind(
+        #     indicator="PCT_CHG",
+        #     symols=load_bench_cons(bench),
+        #     end_date=END_DATE if END_DATE else np.datetime64("today"),
+        # )
+        # rtn /= 100
+        # vol = rtn.std(axis=1).to_frame()
+        # percentile = calculate_percentile(vol[0].values, 250)
+        # weekly_mean_percentile = rolling_mean(percentile, 5).round(3)
+        # display_dict.update(
+        #     {
+        #         f"{name}波动率分位数MA5": [
+        #             weekly_mean_percentile[-1],
+        #             weekly_mean_percentile[pat],
+        #         ]
+        #     }
+        # )
+        # combined_fig.update(
+        #     {
+        #         name: plot_lines_chart(
+        #             x_data=vol.index.strftime("%Y-%m-%d")[249:],
+        #             ys_data=[
+        #                 percentile,
+        #                 weekly_mean_percentile.round(3),
+        #             ],
+        #             names=[
+        #                 f"{name}成分股波动率分位数",
+        #                 f"{name}成分股波动率分位数MA5",
+        #             ],
+        #             range_start=75,
+        #         )
+        #     }
+        # )
+
     #     # 赚钱效应
     #     # NOTE: bench rtn 只会有前一天的数据, 而rtn中会有当天的数据, 故需要剔除最后一天的数据
     #     bench_rtn = hist_bench_df[["日期", "PCT_CHG"]].copy()
@@ -300,42 +303,44 @@ if __name__ == "__main__":
     #         ],
     #     }
     # )
-    # # barra 轮动速度
-    # speed_of_barra_monthly, speed_of_barra_weekly = load_speed_of_barra(
-    #     end_date=END_DATE
-    # )
-    # combined_fig.update(
-    #     {
-    #         "base": plot_lines_chart(
-    #             x_data=np.datetime_as_string(
-    #                 speed_of_barra_monthly.index[-100:], unit="D"
-    #             ),
-    #             ys_data=[
-    #                 speed_of_barra_monthly.iloc[-100:, 0].values,
-    #                 speed_of_barra_weekly.iloc[-100:, 0].values,
-    #             ],
-    #             names=["Barra轮动速度(月)", "Barra轮动速度(周)"],
-    #             range_start=75,
-    #             lower_bound=min(
-    #                 min(speed_of_barra_monthly.iloc[-100:, 0].values.round(2)),
-    #                 min(speed_of_barra_weekly.iloc[-100:, 0].values.round(2)),
-    #             )
-    #             - 0.02,
-    #         )
-    #     }
-    # )
-    # display_dict.update(
-    #     {
-    #         "Barra轮动速度(月)": [
-    #             speed_of_barra_monthly.iloc[-1, 0],
-    #             speed_of_barra_monthly.iloc[pat, 0],
-    #         ],
-    #         "Barra轮动速度(周)": [
-    #             speed_of_barra_weekly.iloc[-1, 0],
-    #             speed_of_barra_weekly.iloc[pat, 0],
-    #         ],
-    #     }
-    # )
+
+    # barra 轮动速度
+    speed_of_barra_monthly, speed_of_barra_weekly = load_speed_of_barra(
+        end_date=END_DATE
+    )
+    print("Plot Barra 轮动速度")
+    combined_fig.update(
+        {
+            "base": plot_lines_chart(
+                x_data=np.datetime_as_string(
+                    speed_of_barra_monthly.index[-100:], unit="D"
+                ),
+                ys_data=[
+                    speed_of_barra_monthly.iloc[-100:, 0].values,
+                    speed_of_barra_weekly.iloc[-100:, 0].values,
+                ],
+                names=["Barra轮动速度(月)", "Barra轮动速度(周)"],
+                range_start=75,
+                lower_bound=min(
+                    min(speed_of_barra_monthly.iloc[-100:, 0].values.round(2)),
+                    min(speed_of_barra_weekly.iloc[-100:, 0].values.round(2)),
+                )
+                - 0.02,
+            )
+        }
+    )
+    display_dict.update(
+        {
+            "Barra轮动速度(月)": [
+                speed_of_barra_monthly.iloc[-1, 0],
+                speed_of_barra_monthly.iloc[pat, 0],
+            ],
+            "Barra轮动速度(周)": [
+                speed_of_barra_weekly.iloc[-1, 0],
+                speed_of_barra_weekly.iloc[pat, 0],
+            ],
+        }
+    )
 
     # # Plot IC and IM data with dual Y-axis
     # IF_data = pd.read_csv(Path(r"data/IF_data.csv"))
