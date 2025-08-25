@@ -371,7 +371,7 @@ def load_speed_of_indus(
     return speed_of_idus_monthly.round(3), speed_of_idus_weekly.round(3)
 
 
-def load_speed_of_barra(cne5, end_date: np.datetime64 = None):
+def load_speed_of_barra(end_date: np.datetime64 = None):
     engine = connect_to_database()
     cne5 = pd.read_sql_query("SELECT * FROM cne5", engine)
     if end_date:
