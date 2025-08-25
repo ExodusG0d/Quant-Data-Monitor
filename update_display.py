@@ -69,6 +69,9 @@ if __name__ == "__main__":
 
     # Plot 指数成交金额(绘制在一幅图中)
     all_volumeRMB = []
+    print("Plot 指数成交金额(合体图)")
+    query_bench = f"SELECT * FROM bench_basic_data"
+    hist_all_bench_df = pd.read_sql_query(query_bench, engine)
     for bench, name in {
         "000985.CSI": "中证全指",
         "000300.SH": "沪深300",
@@ -76,8 +79,7 @@ if __name__ == "__main__":
         "000852.SH": "中证1000",
         "932000.CSI": "中证2000",
     }.items():
-        query_bench = f"SELECT * FROM bench_basic_data where code = '{bench}'"
-        hist_bench_df = pd.read_sql_query(query_bench, engine)
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench]
         if END_DATE:
             hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors="coerce")
             hist_bench_df = hist_bench_df[hist_bench_df["date"] <= END_DATE]
@@ -99,7 +101,7 @@ if __name__ == "__main__":
     combined_fig.update(
         {
             "base": plot_lines_chart(
-                x_data=hist_bench_df["date"].values[-250:],
+                x_data=hist_all_bench_df["date"].values[-250:],
                 ys_data=all_volumeRMB,
                 names=[
                     f"{name}成交金额MA5"
@@ -117,6 +119,7 @@ if __name__ == "__main__":
     )
 
     # Plot 指数成交金额（各自绘图，并包含分位数信息）
+    print("Plot 指数成交金额(各自图)")
     for bench, name in {
         "000985.CSI": "中证全指",
         "000300.SH": "沪深300",
@@ -124,8 +127,7 @@ if __name__ == "__main__":
         "000852.SH": "中证1000",
         "932000.CSI": "中证2000",
     }.items():
-        query_bench = f"SELECT * FROM bench_basic_data where code = '{bench}'"
-        hist_bench_df = pd.read_sql_query(query_bench, engine)
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench]
         if END_DATE:
             hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors='coerce')
             hist_bench_df = hist_bench_df[hist_bench_df["date"] <= END_DATE]
