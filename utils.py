@@ -374,8 +374,9 @@ def load_speed_of_indus(
 def load_speed_of_barra(end_date: np.datetime64 = None):
     engine = connect_to_database()
     cne5 = pd.read_sql_query("SELECT * FROM cne5", engine)
+    cne5["日期"] = pd.to_datetime(cne5["日期"])
     if end_date:
-        cne5 = cne5[cne5["日期"] <= end_date]
+        cne5 = cne5[cne5["日期"].dt.date <= pd.Timestamp(end_date).date()]
     cne5 = cne5.melt(id_vars=["日期"], var_name="barra", value_name="rtn").sort_values(
         ["日期", "barra"]
     )
