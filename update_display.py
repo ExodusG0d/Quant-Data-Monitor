@@ -67,7 +67,7 @@ if __name__ == "__main__":
         }
     )
 
-    # Plot 指数成交金额
+    # Plot 指数成交金额(绘制在一幅图中)
     all_volumeRMB = []
     for bench, name in {
         "000985.CSI": "中证全指",
@@ -116,35 +116,36 @@ if __name__ == "__main__":
         }
     )
 
-    # # Plot 指数成交金额
-    # for bench, name in {
-    #     "000985.CSI": "中证全指",
-    #     "000300.SH": "沪深300",
-    #     "000905.SH": "中证500",
-    #     "000852.SH": "中证1000",
-    #     "932000.CSI": "中证2000",
-    # }.items():
-    #     hist_bench_df = pd.read_csv(Path(f"data/{bench}.csv"))
-    #     if END_DATE:
-    #         hist_bench_df["日期"] = pd.to_datetime(hist_bench_df["日期"])
-    #         hist_bench_df = hist_bench_df[hist_bench_df["日期"] <= END_DATE]
-    #         hist_bench_df["日期"] = np.datetime_as_string(
-    #             hist_bench_df["日期"], unit="D"
-    #         )
-    #     # Calculate and plot 250-day rolling 成交金额 percentile
-    #     VolumeRMB = hist_bench_df["AMT"].values / 1e8
+    # Plot 指数成交金额（各自绘图，并包含分位数信息）
+    for bench, name in {
+        "000985.CSI": "中证全指",
+        "000300.SH": "沪深300",
+        "000905.SH": "中证500",
+        "000852.SH": "中证1000",
+        "932000.CSI": "中证2000",
+    }.items():
+        query_bench = f"SELECT * FROM bench_basic_data where code = '{bench}'"
+        hist_bench_df = pd.read_sql_query(query_bench, engine)
+        if END_DATE:
+            hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors='coerce')
+            hist_bench_df = hist_bench_df[hist_bench_df["date"] <= END_DATE]
+            hist_bench_df["date"] = np.datetime_as_string(
+                hist_bench_df["date"], unit="D"
+            )
+        # Calculate and plot 250-day rolling 成交金额 percentile
+        VolumeRMB = hist_bench_df["AMT"].values / 1e8
+        percentile = calculate_percentile(VolumeRMB, 250)
+        combined_fig.update(
+            {
+                name: plot_dual_y_line_chart(
+                    x_data=hist_bench_df["date"].values[-250:],
+                    ys_data=[VolumeRMB[-250:], percentile[-250:]],
+                    names=[f"{name}成交金额", f"{name}成交金额分位数"],
+                    range_start=75,
+                )
+            }
+        )
 
-    #     percentile = calculate_percentile(VolumeRMB, 250)
-    #     combined_fig.update(
-    #         {
-    #             name: plot_dual_y_line_chart(
-    #                 x_data=hist_bench_df["日期"].values[-250:],
-    #                 ys_data=[VolumeRMB[-250:], percentile[-250:]],
-    #                 names=[f"{name}成交金额", f"{name}成交金额分位数"],
-    #                 range_start=75,
-    #             )
-    #         }
-    #     )
     #     # 计算成分股波动率
     #     rtn = load_hist_data_from_wind(
     #         indicator="PCT_CHG",
