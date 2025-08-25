@@ -342,53 +342,58 @@ if __name__ == "__main__":
         }
     )
 
-    # # Plot IC and IM data with dual Y-axis
-    # IF_data = pd.read_csv(Path(r"data/IF_data.csv"))
-    # if END_DATE:
-    #     IF_data["日期"] = pd.to_datetime(IF_data["日期"])
-    #     IF_data = IF_data[IF_data["日期"] <= END_DATE]
-    #     IF_data["日期"] = np.datetime_as_string(IF_data["日期"], unit="D")
-    # IC_data = pd.read_csv(Path(r"data/IC_data.csv"))
-    # if END_DATE:
-    #     IC_data["日期"] = pd.to_datetime(IC_data["日期"])
-    #     IC_data = IC_data[IC_data["日期"] <= END_DATE]
-    #     IC_data["日期"] = np.datetime_as_string(IC_data["日期"], unit="D")
-    # IM_data = pd.read_csv(Path(r"data/IM_data.csv"))
-    # if END_DATE:
-    #     IM_data["日期"] = pd.to_datetime(IM_data["日期"])
-    #     IM_data = IM_data[IM_data["日期"] <= END_DATE]
-    #     IM_data["日期"] = np.datetime_as_string(IM_data["日期"], unit="D")
+    # Plot IC and IM data with dual Y-axis
+    engine_futures = connect_to_database()
+    IF_query = "SELECT * FROM IF_data"
+    IC_query = "SELECT * FROM IC_data"
+    IM_query = "SELECT * FROM IM_data"
+    IF_data = pd.read_sql_query(IF_query, engine_futures)
+    if END_DATE:
+        IF_data["日期"] = pd.to_datetime(IF_data["日期"])
+        IF_data = IF_data[IF_data["日期"] <= END_DATE]
+        IF_data["日期"] = np.datetime_as_string(IF_data["日期"], unit="D")
+    IC_data = pd.read_sql_query(IC_query, engine_futures)
+    if END_DATE:
+        IC_data["日期"] = pd.to_datetime(IC_data["日期"])
+        IC_data = IC_data[IC_data["日期"] <= END_DATE]
+        IC_data["日期"] = np.datetime_as_string(IC_data["日期"], unit="D")
+    IM_data = pd.read_sql_query(IM_query, engine_futures)
+    if END_DATE:
+        IM_data["日期"] = pd.to_datetime(IM_data["日期"])
+        IM_data = IM_data[IM_data["日期"] <= END_DATE]
+        IM_data["日期"] = np.datetime_as_string(IM_data["日期"], unit="D")
 
-    # combined_fig.update(
-    #     {
-    #         "base": plot_lines_chart(
-    #             x_data=IC_data["日期"],
-    #             ys_data=[
-    #                 IF_data["年化基差(%)"],
-    #                 IC_data["年化基差(%)"],
-    #                 IM_data["年化基差(%)"],
-    #             ],
-    #             names=["IF年化基差(%)", "IC年化基差(%)", "IM年化基差(%)"],
-    #             range_start=75,
-    #         )
-    #     }
-    # )
-    # display_dict.update(
-    #     {
-    #         "IF年化基差(%)": [
-    #             IF_data["年化基差(%)"].values[-1],
-    #             IF_data["年化基差(%)"].values[pat],
-    #         ],
-    #         "IC年化基差(%)": [
-    #             IC_data["年化基差(%)"].values[-1],
-    #             IC_data["年化基差(%)"].values[pat],
-    #         ],
-    #         "IM年化基差(%)": [
-    #             IM_data["年化基差(%)"].values[-1],
-    #             IM_data["年化基差(%)"].values[pat],
-    #         ],
-    #     }
-    # )
+    print("Plot 期指基差")
+    combined_fig.update(
+        {
+            "base": plot_lines_chart(
+                x_data=IC_data["日期"],
+                ys_data=[
+                    IF_data["年化基差(%)"],
+                    IC_data["年化基差(%)"],
+                    IM_data["年化基差(%)"],
+                ],
+                names=["IF年化基差(%)", "IC年化基差(%)", "IM年化基差(%)"],
+                range_start=75,
+            )
+        }
+    )
+    display_dict.update(
+        {
+            "IF年化基差(%)": [
+                IF_data["年化基差(%)"].values[-1],
+                IF_data["年化基差(%)"].values[pat],
+            ],
+            "IC年化基差(%)": [
+                IC_data["年化基差(%)"].values[-1],
+                IC_data["年化基差(%)"].values[pat],
+            ],
+            "IM年化基差(%)": [
+                IM_data["年化基差(%)"].values[-1],
+                IM_data["年化基差(%)"].values[pat],
+            ],
+        }
+    )
 
     display_df = pd.DataFrame(display_dict, index=["当期", f"上期(T{pat+1})"]).T
     display_df["变化"] = display_df["当期"] - display_df[f"上期(T{pat+1})"]
