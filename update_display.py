@@ -79,7 +79,7 @@ if __name__ == "__main__":
         "000852.SH": "中证1000",
         "932000.CSI": "中证2000",
     }.items():
-        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench].copy()
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench].copy().sort_values(by="date")
         if END_DATE:
             hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors="coerce")
             hist_bench_df = hist_bench_df[hist_bench_df["date"] <= END_DATE]
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
         # Plot 指数成交金额（各自绘图，并包含分位数信息）
         print("Plot 指数成交金额(各自图)")
-        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench].copy()
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench].copy().sort_values(by="date")
         if END_DATE:
             hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors='coerce')
             hist_bench_df = hist_bench_df[hist_bench_df["date"] <= END_DATE]
@@ -154,9 +154,8 @@ if __name__ == "__main__":
         # Plot 指数20日滚动年化波动率
         print("Plot 指数20日滚动年化波动率")
         # calculation
-        hist_bench_df = hist_all_bench_df[hist_all_bench_df["code"] == bench].copy()
-        hist_bench_df_sorted = hist_bench_df.sort_values(by = "date")
-        values_array = hist_bench_df_sorted['PCT_CHG'].values
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df["code"] == bench].copy().sort_values(by="date")
+        values_array = hist_bench_df['PCT_CHG'].values
         rolling_volatility = rolling_std(values_array, 20) * np.sqrt(252)
         weekly_mean_rolling_volatility = rolling_mean(rolling_volatility, 5).round(3)
         # plot
@@ -260,21 +259,23 @@ if __name__ == "__main__":
     # )
 
     # # Plot 价值VS成长相对强弱
-    # cni_399371 = pd.read_csv(Path(r"data/399371.SZ.csv"))
+    # print("Plot 价值VS成长相对强弱")
+    # cni_399370 = hist_all_bench_df[hist_all_bench_df["code"] == "399370.SZ"].copy()
+    # cni_399371 = hist_all_bench_df[hist_all_bench_df["code"] == "399371.SZ"].copy()
+    # print(cni_399370.shape, cni_399371.shape)
     # if END_DATE:
-    #     cni_399371["日期"] = pd.to_datetime(cni_399371["日期"])
-    #     cni_399371 = cni_399371[cni_399371["日期"] <= END_DATE]
-    #     cni_399371["日期"] = np.datetime_as_string(cni_399371["日期"], unit="D")
-    # cni_399370 = pd.read_csv(Path(r"data/399370.SZ.csv"))
+    #     cni_399371["date"] = pd.to_datetime(cni_399371["date"])
+    #     cni_399371 = cni_399371[cni_399371["date"] <= END_DATE]
+    #     cni_399371["date"] = np.datetime_as_string(cni_399371["date"], unit="D")
     # if END_DATE:
-    #     cni_399370["日期"] = pd.to_datetime(cni_399370["日期"])
-    #     cni_399370 = cni_399370[cni_399370["日期"] <= END_DATE]
-    #     cni_399370["日期"] = np.datetime_as_string(cni_399370["日期"], unit="D")
+    #     cni_399370["date"] = pd.to_datetime(cni_399370["date"])
+    #     cni_399370 = cni_399370[cni_399370["date"] <= END_DATE]
+    #     cni_399370["date"] = np.datetime_as_string(cni_399370["date"], unit="D")
     # value_vs_growth = (cni_399371["PCT_CHG"] - cni_399370["PCT_CHG"]) / 100
     # combined_fig.update(
     #     {
     #         "base": plot_line_chart(
-    #             x_data=cni_399371["日期"].values[-100:],
+    #             x_data=hist_bench_df["date"].values[-100:],
     #             y_data=value_vs_growth.values[-100:].round(3),
     #             name="价值VS成长相对强弱",
     #             range_start=75,
