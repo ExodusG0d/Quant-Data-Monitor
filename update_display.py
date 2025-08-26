@@ -14,7 +14,7 @@ from utils import (
     load_speed_of_indus,
     load_speed_of_barra,
 )
-from window import rolling_mean
+from window import rolling_mean, rolling_std
 from typing import List
 
 
@@ -120,8 +120,6 @@ if __name__ == "__main__":
 
     # 各自绘图的大循环
 
-    # Plot 指数成交金额（各自绘图，并包含分位数信息）
-    print("Plot 指数成交金额(各自图)")
     for bench, name in {
         "000985.CSI": "中证全指",
         "000300.SH": "沪深300",
@@ -129,6 +127,9 @@ if __name__ == "__main__":
         "000852.SH": "中证1000",
         "932000.CSI": "中证2000",
     }.items():
+
+        # Plot 指数成交金额（各自绘图，并包含分位数信息）
+        print("Plot 指数成交金额(各自图)")
         hist_bench_df = hist_all_bench_df[hist_all_bench_df['code']==bench].copy()
         if END_DATE:
             hist_bench_df["date"] = pd.to_datetime(hist_bench_df["date"], errors='coerce')
@@ -145,6 +146,26 @@ if __name__ == "__main__":
                     x_data=hist_bench_df["date"].values[-250:],
                     ys_data=[VolumeRMB[-250:], percentile[-250:]],
                     names=[f"{name}成交金额", f"{name}成交金额分位数"],
+                    range_start=75,
+                )
+            }
+        )
+
+        # Plot 指数20日滚动年化波动率
+        print("Plot 指数20日滚动年化波动率")
+        # calculation
+        hist_bench_df = hist_all_bench_df[hist_all_bench_df["code"] == bench].copy()
+        hist_bench_df_sorted = hist_bench_df.sort_values(by = "date")
+        values_array = hist_bench_df_sorted['PCT_CHG'].values
+        rolling_volatility = rolling_std(values_array, 20) * np.sqrt(252)
+        weekly_mean_rolling_volatility = rolling_mean(rolling_volatility, 5).round(3)
+        # plot
+        combined_fig.update(
+            {
+                name: plot_lines_chart(
+                    x_data=hist_bench_df["date"].values[-250:],
+                    ys_data=[rolling_volatility[-250:], weekly_mean_rolling_volatility[-250:]],
+                    names=[f"{name}20日滚动年化波动率", f"{name}20日滚动年化波动率MA5"],
                     range_start=75,
                 )
             }
@@ -303,6 +324,8 @@ if __name__ == "__main__":
     #         ],
     #     }
     # )
+
+    #### base部分图 ####
 
     # barra 轮动速度
     speed_of_barra_monthly, speed_of_barra_weekly = load_speed_of_barra(
