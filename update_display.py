@@ -262,7 +262,6 @@ if __name__ == "__main__":
     print("Plot 价值VS成长相对强弱")
     cni_399370 = hist_all_bench_df[hist_all_bench_df["code"] == "399370.SZ"].copy().sort_values(by="date").reset_index(drop=True)
     cni_399371 = hist_all_bench_df[hist_all_bench_df["code"] == "399371.SZ"].copy().sort_values(by="date").reset_index(drop=True) # drop the indexes to ensure the alignment
-    print(cni_399370.shape, cni_399371.shape)
     if END_DATE:
         cni_399371["date"] = pd.to_datetime(cni_399371["date"])
         cni_399371 = cni_399371[cni_399371["date"] <= END_DATE]
@@ -272,7 +271,6 @@ if __name__ == "__main__":
         cni_399370 = cni_399370[cni_399370["date"] <= END_DATE]
         cni_399370["date"] = np.datetime_as_string(cni_399370["date"], unit="D")
     value_vs_growth = (cni_399371["PCT_CHG"] - cni_399370["PCT_CHG"]) / 100
-    print(value_vs_growth)
     combined_fig.update(
         {
             "base": plot_line_chart(
