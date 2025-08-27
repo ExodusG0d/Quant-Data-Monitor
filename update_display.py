@@ -458,11 +458,17 @@ if __name__ == "__main__":
                     background-color: #f1f3f5;
                     border-radius: 5px;
                     cursor: pointer;
+                    transition: background-color 0.2s ease-in-out; /* Smooth color change */;
+                }}
+                summary:hover {{
+                    background-color: #e9ecef; /* Slightly darker on hover */
                 }}
             </style>
         </head>
         <body>
-            {tmp_html}
+            <div class="container">
+                {tmp_html}
+            </div>
         </body>
     </html>"""
     # Write the combined figure to an HTML file
