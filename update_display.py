@@ -409,14 +409,18 @@ if __name__ == "__main__":
 
     html = f"""<html>
         <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
             <meta charset="UTF-8">
             <title>Value over Time</title>
             <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
+                body {
+                    font-family: 'Roboto', sans-serif; /* Use the new font */
+                    background-color: #f8f9fa; /* Off-white background */
+                    color: #212529; /* Dark gray text for better contrast */
+                    line-height: 1.6;
+                }
                 table {{
                     margin: auto;
                     margin-bottom: 20px;
@@ -428,17 +432,17 @@ if __name__ == "__main__":
                     padding: 8px;
                     text-align: center;
                 }}
-                th {{
-                    background-color: #f59e00;
+                th {
+                    background-color: #343a40; /* A professional dark gray */
                     color: white;
-                }}
-                #timestamp {{
+                }
+                timestamp {
                     position: absolute;
                     top: 10px;
                     left: 10px;
                     font-size: 12px;
                     color: #999;
-                }}
+                }
             </style>
         </head>
         <body>
