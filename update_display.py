@@ -415,12 +415,12 @@ if __name__ == "__main__":
             <meta charset="UTF-8">
             <title>Value over Time</title>
             <style>
-                body {
+                body {{
                     font-family: 'Roboto', sans-serif; /* Use the new font */
                     background-color: #f8f9fa; /* Off-white background */
                     color: #212529; /* Dark gray text for better contrast */
                     line-height: 1.6;
-                }
+                }}
                 table {{
                     margin: auto;
                     margin-bottom: 20px;
@@ -432,17 +432,17 @@ if __name__ == "__main__":
                     padding: 8px;
                     text-align: center;
                 }}
-                th {
+                th {{
                     background-color: #343a40; /* A professional dark gray */
                     color: white;
-                }
-                timestamp {
+                }}
+                timestamp {{
                     position: absolute;
                     top: 10px;
                     left: 10px;
                     font-size: 12px;
                     color: #999;
-                }
+                }}
             </style>
         </head>
         <body>
