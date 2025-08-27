@@ -30,12 +30,12 @@ __all__ = [
     "load_speed_of_barra",
 ]
 
-def connect_to_database():
+def connect_to_database(db_name = "UpdatedData"):
     """创建并返回数据库引擎"""
-    print("连接到数据库...")
+    print(f"连接到数据库{db_name}...")
     # 数据库连接
     engine = sqlalchemy.create_engine(
-        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/UpdatedData?charset=utf8"
+        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/{db_name}?charset=utf8"
     )
     return engine
 
@@ -371,11 +371,12 @@ def load_speed_of_indus(
     return speed_of_idus_monthly.round(3), speed_of_idus_weekly.round(3)
 
 
-def load_speed_of_barra(cne5, end_date: np.datetime64 = None):
+def load_speed_of_barra(end_date: np.datetime64 = None):
     engine = connect_to_database()
     cne5 = pd.read_sql_query("SELECT * FROM cne5", engine)
+    cne5["日期"] = pd.to_datetime(cne5["日期"])
     if end_date:
-        cne5 = cne5[cne5["日期"] <= end_date]
+        cne5 = cne5[cne5["日期"].dt.date <= pd.Timestamp(end_date).date()]
     cne5 = cne5.melt(id_vars=["日期"], var_name="barra", value_name="rtn").sort_values(
         ["日期", "barra"]
     )
