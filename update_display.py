@@ -443,6 +443,22 @@ if __name__ == "__main__":
                     font-size: 12px;
                     color: #999;
                 }}
+                .container {{
+                    max-width: 1200px; /* Set a max width for content */
+                    margin: 20px auto; /* Center the container with space on top/bottom */
+                    padding: 20px;
+                    background-color: #ffffff; /* White background for the content area */
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* A subtle shadow effect */
+                    border-radius: 8px;
+                }}
+                summary {{
+                    padding: 15px; /* More padding */
+                    font-size: 1.2em; /* Slightly larger title font */
+                    font-weight: bold;
+                    background-color: #f1f3f5;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }}
             </style>
         </head>
         <body>
