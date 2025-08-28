@@ -207,7 +207,7 @@ def plot_line_chart(
             xaxis_opts=opts.AxisOpts(type_="category"),
             yaxis_opts=opts.AxisOpts(type_="value"),
             legend_opts=opts.LegendOpts(
-                textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=20)
+                textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=17)
             ),
             datazoom_opts=[
                 opts.DataZoomOpts(
@@ -248,7 +248,7 @@ def plot_lines_chart(
         xaxis_opts=opts.AxisOpts(type_="category"),
         yaxis_opts=opts.AxisOpts(type_="value", min_=lower_bound, max_=up_bound),
         legend_opts=opts.LegendOpts(
-            textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=20)
+            textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=17),
         ),
         datazoom_opts=[
             opts.DataZoomOpts(
@@ -308,7 +308,7 @@ def plot_dual_y_line_chart(
         .set_global_opts(
             xaxis_opts=opts.AxisOpts(type_="category"),
             legend_opts=opts.LegendOpts(
-                textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=20)
+                textstyle_opts=opts.TextStyleOpts(font_weight="bold", font_size=17)
             ),
             datazoom_opts=[
                 opts.DataZoomOpts(
