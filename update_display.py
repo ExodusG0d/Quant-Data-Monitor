@@ -428,6 +428,9 @@ if __name__ == "__main__":
         (display_df["当期"] < 0) | (display_df[f"上期(T{pat+1})"] < 0), "变化%"
     ] = np.nan
 
+
+    ### Jinja2 Template Rendering ###
+
     env = Environment(loader=FileSystemLoader('.')) # Looks for templates in the current directory
     template = env.get_template('report_template.html')
 
@@ -440,7 +443,7 @@ if __name__ == "__main__":
 
     # 3. Render the template with your data
     html_content = template.render(
-        report_title="Market Analysis Report",
+        report_title="Market Overall Monitor 📈",
         last_updated=datetime.now(ZoneInfo('Asia/Shanghai')).strftime("%Y-%m-%d %H:%M:%S"),
         end_date=np.datetime_as_string(END_DATE, unit="D"),
         report_sections=report_sections,
