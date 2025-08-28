@@ -222,6 +222,56 @@ def plot_line_chart(
     )
     return line
 
+from pyecharts import options as opts
+from pyecharts.charts import Line
+from typing import List
+import numpy as np
+
+
+def plot_stacked_area_chart(
+    x_data: np.ndarray,
+    ys_data: List[np.ndarray],
+    names: List[str],
+    title: str = "",
+    subtitle: str = "",
+):
+    """
+    Plots a stacked area chart showing the contribution of each series to a total.
+    """
+    assert len(ys_data) == len(names), "Length of ys_data and names should be the same"
+
+    line = (
+        Line(init_opts={"width": "1560px", "height": "600px"})
+        .add_xaxis(xaxis_data=list(x_data))
+        .set_global_opts(
+            title_opts=opts.TitleOpts(
+                title=title, subtitle=subtitle, pos_left="center"
+            ),
+            tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
+            legend_opts=opts.LegendOpts(pos_top="bottom"),
+            yaxis_opts=opts.AxisOpts(
+                type_="value",
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
+        )
+    )
+
+    # The loop is slightly different
+    for i, y_data in enumerate(ys_data):
+        line.add_yaxis(
+            series_name=names[i],
+            y_axis=list(y_data),
+            # --- KEY CHANGES ARE HERE ---
+            stack="Total",  # 1. This tells pyecharts to stack the series
+            areastyle_opts=opts.AreaStyleOpts(
+                opacity=0.5
+            ),  # 2. This fills the area under the line
+            is_symbol_show=False,
+        )
+
+    return line
+
 
 # Function to generate a line chart with multiple lines
 def plot_lines_chart(

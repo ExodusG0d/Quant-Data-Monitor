@@ -11,6 +11,7 @@ from utils import (
     plot_line_chart,
     plot_dual_y_line_chart,
     plot_lines_chart,
+    plot_stacked_area_chart,
     load_speed_of_indus,
     load_speed_of_barra,
 )
@@ -69,7 +70,8 @@ if __name__ == "__main__":
     )
 
     # Plot 指数成交金额(绘制在一幅图中)
-    all_volumeRMB = []
+    all_mean5_volumeRMB = []
+    all_daily_volumeRMB = []
     query_bench = f"SELECT * FROM bench_basic_data"
     hist_all_bench_df = pd.read_sql_query(query_bench, engine)
     print("Plot 指数成交金额(合体图)")
@@ -88,13 +90,20 @@ if __name__ == "__main__":
                 hist_bench_df["date"], unit="D"
             )
         volumeRMB = hist_bench_df["AMT"].values / 1e8
+        daily_volumeRMB = volumeRMB.round(2)[-250:]
         weekly_mean_volumeRMB = rolling_mean(volumeRMB, 5).round(2)[-250:]
-        all_volumeRMB.append(weekly_mean_volumeRMB)
+        all_mean5_volumeRMB.append(weekly_mean_volumeRMB)
+        if name != "中证全指": #这是后面绘制成交占比，所以不能要全指的
+            all_daily_volumeRMB.append(daily_volumeRMB)
         display_dict.update(
             {
                 f"{name}成交金额MA5": [
                     weekly_mean_volumeRMB[-1],
                     weekly_mean_volumeRMB[pat],
+                ],
+                f"{name}成交金额": [
+                    daily_volumeRMB[-1],
+                    daily_volumeRMB[pat],
                 ]
             }
         )
@@ -103,9 +112,9 @@ if __name__ == "__main__":
         {
             "base": plot_lines_chart(
                 x_data=hist_bench_df["date"].values[-250:],
-                ys_data=all_volumeRMB,
+                ys_data=all_mean5_volumeRMB,
                 names=[
-                    f"{name}成交金额MA5"
+                    f"{name}成交金额"
                     for name in [
                         "中证全指",
                         "沪深300",
@@ -115,6 +124,24 @@ if __name__ == "__main__":
                     ]
                 ],
                 range_start=75,
+            )
+        }
+    )
+
+    combined_fig.update(
+        {
+            "base": plot_stacked_area_chart(
+                x_data=hist_bench_df["date"].values[-250:],
+                ys_data=all_daily_volumeRMB,
+                names=[
+                    f"{name}成交金额MA5占比"
+                    for name in [
+                        "沪深300",
+                        "中证500",
+                        "中证1000",
+                        "中证2000",
+                    ]
+                ],
             )
         }
     )
@@ -427,7 +454,6 @@ if __name__ == "__main__":
     display_df.loc[
         (display_df["当期"] < 0) | (display_df[f"上期(T{pat+1})"] < 0), "变化%"
     ] = np.nan
-
 
     ### Jinja2 Template Rendering ###
 
