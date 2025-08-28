@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 x_data=hist_bench_df["date"].values[-250:],
                 ys_data=all_mean5_volumeRMB,
                 names=[
-                    f"{name}成交金额"
+                    f"{name}成交金额MA5"
                     for name in [
                         "中证全指",
                         "沪深300",
@@ -134,7 +134,7 @@ if __name__ == "__main__":
                 x_data=hist_bench_df["date"].values[-250:],
                 ys_data=all_daily_volumeRMB,
                 names=[
-                    f"{name}成交金额MA5占比"
+                    f"{name}成交金额堆积"
                     for name in [
                         "沪深300",
                         "中证500",
@@ -142,6 +142,7 @@ if __name__ == "__main__":
                         "中证2000",
                     ]
                 ],
+                title="各指数成交金额堆积"
             )
         }
     )

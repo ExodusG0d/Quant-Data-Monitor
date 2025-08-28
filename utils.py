@@ -16,6 +16,7 @@ from typing import Literal, List
 from typing import List
 from pyecharts.charts import Line
 from pyecharts import options as opts
+from pyecharts.commons.utils import JsCode
 from pathlib import Path
 from config import SQL_PASSWORDS, SQL_HOST
 
@@ -247,7 +248,10 @@ def plot_stacked_area_chart(
             title_opts=opts.TitleOpts(
                 title=title, subtitle=subtitle, pos_left="center"
             ),
-            tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
+            tooltip_opts=opts.TooltipOpts(
+                trigger="axis",
+                axis_pointer_type="cross",
+            ),
             legend_opts=opts.LegendOpts(pos_top="bottom"),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
