@@ -11,6 +11,8 @@ from utils import (
     plot_line_chart,
     plot_dual_y_line_chart,
     plot_lines_chart,
+    plot_stacked_area_chart,
+    plot_100_percent_stacked_area_chart,
     load_speed_of_indus,
     load_speed_of_barra,
 )
@@ -37,6 +39,7 @@ display_dict = {}
 if __name__ == "__main__":
     combined_fig = Specify_dict(
         {
+            "📊 Market Overview": [],
             "base": [],
             "中证全指": [],
             "沪深300": [],
@@ -69,7 +72,8 @@ if __name__ == "__main__":
     )
 
     # Plot 指数成交金额(绘制在一幅图中)
-    all_volumeRMB = []
+    all_mean5_volumeRMB = []
+    all_daily_volumeRMB = []
     query_bench = f"SELECT * FROM bench_basic_data"
     hist_all_bench_df = pd.read_sql_query(query_bench, engine)
     print("Plot 指数成交金额(合体图)")
@@ -88,13 +92,20 @@ if __name__ == "__main__":
                 hist_bench_df["date"], unit="D"
             )
         volumeRMB = hist_bench_df["AMT"].values / 1e8
+        daily_volumeRMB = volumeRMB.round(2)[-250:]
         weekly_mean_volumeRMB = rolling_mean(volumeRMB, 5).round(2)[-250:]
-        all_volumeRMB.append(weekly_mean_volumeRMB)
+        all_mean5_volumeRMB.append(weekly_mean_volumeRMB)
+        if name != "中证全指": #这是后面绘制成交占比，所以不能要全指的
+            all_daily_volumeRMB.append(daily_volumeRMB)
         display_dict.update(
             {
                 f"{name}成交金额MA5": [
                     weekly_mean_volumeRMB[-1],
                     weekly_mean_volumeRMB[pat],
+                ],
+                f"{name}成交金额": [
+                    daily_volumeRMB[-1],
+                    daily_volumeRMB[pat],
                 ]
             }
         )
@@ -103,7 +114,7 @@ if __name__ == "__main__":
         {
             "base": plot_lines_chart(
                 x_data=hist_bench_df["date"].values[-250:],
-                ys_data=all_volumeRMB,
+                ys_data=all_mean5_volumeRMB,
                 names=[
                     f"{name}成交金额MA5"
                     for name in [
@@ -115,6 +126,44 @@ if __name__ == "__main__":
                     ]
                 ],
                 range_start=75,
+            )
+        }
+    )
+
+    combined_fig.update(
+        {
+            "base": plot_stacked_area_chart(
+                x_data=hist_bench_df["date"].values[-250:],
+                ys_data=all_daily_volumeRMB,
+                names=[
+                    f"{name}"
+                    for name in [
+                        "沪深300",
+                        "中证500",
+                        "中证1000",
+                        "中证2000",
+                    ]
+                ],
+                title="各指数成交金额堆积"
+            )
+        }
+    )
+
+    combined_fig.update(
+        {
+            "base": plot_100_percent_stacked_area_chart(
+                x_data=hist_bench_df["date"].values[-250:],
+                ys_data=all_daily_volumeRMB,
+                names=[
+                    f"{name}"
+                    for name in [
+                        "沪深300",
+                        "中证500",
+                        "中证1000",
+                        "中证2000",
+                    ]
+                ],
+                title="各指数成交金额占比"
             )
         }
     )
@@ -428,18 +477,23 @@ if __name__ == "__main__":
         (display_df["当期"] < 0) | (display_df[f"上期(T{pat+1})"] < 0), "变化%"
     ] = np.nan
 
-
     ### Jinja2 Template Rendering ###
 
     env = Environment(loader=FileSystemLoader('.')) # Looks for templates in the current directory
-    template = env.get_template('report_template.html')
+    template = env.get_template('report_template_multipages.html')
 
     # 2. Organize all the pieces of data into a structured dictionary
     report_sections = {}
     for section_title, chart_objects in combined_fig.items():
         report_sections[section_title] = {
-            'charts': [chart.render_embed() for chart in chart_objects]
+            "charts": [chart.render_embed() for chart in chart_objects],
+            "summary_table": None,
+            "barra_table": None,
         }
+
+    if '📊 Market Overview' in report_sections:
+        report_sections['📊 Market Overview']['summary_table'] = display_df.T.to_html(render_links=True)
+        report_sections['📊 Market Overview']['barra_table'] = cne5.iloc[-5:].to_html()
 
     # 3. Render the template with your data
     html_content = template.render(
@@ -447,8 +501,6 @@ if __name__ == "__main__":
         last_updated=datetime.now(ZoneInfo('Asia/Shanghai')).strftime("%Y-%m-%d %H:%M:%S"),
         end_date=np.datetime_as_string(END_DATE, unit="D"),
         report_sections=report_sections,
-        summary_table=display_df.T.to_html(render_links=True),
-        barra_table=cne5.iloc[-5:].to_html()
     )
 
     # 4. Write the final HTML to a file
