@@ -99,9 +99,11 @@
                 <div>End Date: {{ end_date }}</div>
 
                 {# This is a Jinja2 'if' statement. #}
-                {% if section_title == '📊 Market Overview' %}
-                {{ summary_table | safe }}
-                {{ barra_table | safe }}
+                {% if section_content.summary_table %}
+                    {{ section_content.summary_table | safe }}
+                {% endif %}
+                {% if section_content.barra_table %}
+                    {{ section_content.barra_table | safe }}
                 {% endif %}
 
                 <div class="chart-wrapper">

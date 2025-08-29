@@ -38,6 +38,7 @@ display_dict = {}
 if __name__ == "__main__":
     combined_fig = Specify_dict(
         {
+            "📊 Market Overview": [],
             "base": [],
             "中证全指": [],
             "沪深300": [],
@@ -465,8 +466,14 @@ if __name__ == "__main__":
     report_sections = {}
     for section_title, chart_objects in combined_fig.items():
         report_sections[section_title] = {
-            'charts': [chart.render_embed() for chart in chart_objects]
+            "charts": [chart.render_embed() for chart in chart_objects],
+            "summary_table": None,
+            "barra_table": None,
         }
+
+    if '📊 Market Overview' in report_sections:
+        report_sections['📊 Market Overview']['summary_table'] = display_df.T.to_html(render_links=True)
+        report_sections['📊 Market Overview']['barra_table'] = cne5.iloc[-5:].to_html()
 
     # 3. Render the template with your data
     html_content = template.render(
@@ -474,8 +481,6 @@ if __name__ == "__main__":
         last_updated=datetime.now(ZoneInfo('Asia/Shanghai')).strftime("%Y-%m-%d %H:%M:%S"),
         end_date=np.datetime_as_string(END_DATE, unit="D"),
         report_sections=report_sections,
-        summary_table=display_df.T.to_html(render_links=True),
-        barra_table=cne5.iloc[-5:].to_html()
     )
 
     # 4. Write the final HTML to a file
