@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .report-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaecef;
+        }
+
+        table {
+            margin: auto;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+
+        timestamp {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        summary {
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #f1f3f5;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            margin-bottom: 10px;
+        }
+
+        summary:hover {
+            background-color: #e9ecef;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        /* 翻页样式 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+
+        .page-btn {
+            background-color: #4b79a1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .page-btn:hover {
+            background-color: #3a6186;
+        }
+
+        .page-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="report-container">
+        <h1>{{ report_title }}</h1>
+
+        <!-- 分页控件 -->
+        <div class="pagination">
+            <button class="page-btn" id="prev-btn" disabled>上一页</button>
+            <div class="page-indicator">页面 <span id="current-page">1</span> / <span id="total-pages">2</span></div>
+            <button class="page-btn" id="next-btn">下一页</button>
+        </div>
+
+        <!-- 第一页 -->
+        <div class="page active" id="page1">
+            <div class="metadata">
+                <div>最后更新: {{ last_updated }}</div>
+                <div>结束日期: {{ end_date }}</div>
+            </div>
+
+            {% for section_title, section_content in report_sections.items() %}
+            {% if loop.index0 < (report_sections.items() | length / 2) | round(0, 'ceil' ) %} <details open>
+                <summary>{{ section_title }}</summary>
+                <div style="margin-top: 10px;">
+                    {% if section_content.summary_table %}
+                    <div class="table-wrapper">
+                        {{ section_content.summary_table | safe }}
+                    </div>
+                    {% endif %}
+                    {% if section_content.barra_table %}
+                    <div class="table-wrapper">
+                        {{ section_content.barra_table | safe }}
+                    </div>
+                    {% endif %}
+
+                    <div class="chart-wrapper">
+                        {% for chart_html in section_content.charts %}
+                        {{ chart_html | safe }}
+                        {% endfor %}
+                    </div>
+                </div>
+                </details>
+                {% endif %}
+                {% endfor %}
+        </div>
+
+        <!-- 第二页 -->
+        <div class="page" id="page2">
+            <div class="metadata">
+                <div>最后更新: {{ last_updated }}</div>
+                <div>结束日期: {{ end_date }}</div>
+            </div>
+
+            {% for section_title, section_content in report_sections.items() %}
+            {% if loop.index0 >= (report_sections.items() | length / 2) | round(0, 'ceil') %}
+            <details open>
+                <summary>{{ section_title }}</summary>
+                <div style="margin-top: 10px;">
+                    {% if section_content.summary_table %}
+                    <div class="table-wrapper">
+                        {{ section_content.summary_table | safe }}
+                    </div>
+                    {% endif %}
+                    {% if section_content.barra_table %}
+                    <div class="table-wrapper">
+                        {{ section_content.barra_table | safe }}
+                    </div>
+                    {% endif %}
+
+                    <div class="chart-wrapper">
+                        {% for chart_html in section_content.charts %}
+                        {{ chart_html | safe }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </details>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pages = document.querySelectorAll('.page');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentPageEl = document.getElementById('current-page');
+            const totalPagesEl = document.getElementById('total-pages');
+
+            let currentPage = 1;
+            const totalPages = pages.length;
+
+            // 设置总页数
+            totalPagesEl.textContent = totalPages;
+
+            // 更新页面状态
+            function updatePagination() {
+                // 隐藏所有页面，显示当前页面
+                pages.forEach((page, index) => {
+                    page.classList.remove('active');
+                    if (index === currentPage - 1) {
+                        page.classList.add('active');
+                    }
+                });
+
+                // 更新按钮状态
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+
+                // 更新页码指示器
+                currentPageEl.textContent = currentPage;
+            }
+
+            // 下一页按钮事件
+            nextBtn.addEventListener('click', function () {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+
+            // 上一页按钮事件
+            prevBtn.addEventListener('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+
+            // 初始化分页状态
+            updatePagination();
+        });
+    </script>
+</body>
+
+</html>

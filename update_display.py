@@ -480,7 +480,7 @@ if __name__ == "__main__":
     ### Jinja2 Template Rendering ###
 
     env = Environment(loader=FileSystemLoader('.')) # Looks for templates in the current directory
-    template = env.get_template('report_template.html')
+    template = env.get_template('report_template_multipages.html')
 
     # 2. Organize all the pieces of data into a structured dictionary
     report_sections = {}
