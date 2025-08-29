@@ -266,11 +266,70 @@ def plot_stacked_area_chart(
         line.add_yaxis(
             series_name=names[i],
             y_axis=list(y_data),
-            # --- KEY CHANGES ARE HERE ---
             stack="Total",  # 1. This tells pyecharts to stack the series
             areastyle_opts=opts.AreaStyleOpts(
                 opacity=0.5
-            ),  # 2. This fills the area under the line
+            ),
+            is_symbol_show=False,
+        )
+
+    return line
+
+
+def plot_100_percent_stacked_area_chart(
+    x_data: np.ndarray,
+    ys_data: List[np.ndarray],
+    names: List[str],
+    title: str = "",
+    subtitle: str = "",
+):
+    """
+    Calculates proportions and plots a 100% stacked area chart.
+    """
+    # --- KEY CALCULATION PART ---
+    # 1. Convert list of arrays to a 2D NumPy array
+    ys_data_np = np.array(ys_data)
+
+    # 2. Handle NaN values by treating them as 0 for the sum
+    ys_data_filled = np.nan_to_num(ys_data_np)
+
+    # 3. Calculate the total for each point in time (summing down the columns)
+    totals = ys_data_filled.sum(axis=0)
+
+    # 4. Calculate the percentage, handling division by zero
+    # np.divide will prevent warnings and correctly result in 0 or NaN
+    percentages = (
+        np.divide(
+            ys_data_filled, totals, out=np.zeros_like(ys_data_filled), where=totals != 0
+        )
+        * 100
+    )
+    # ---------------------------
+
+    line = (
+        Line(init_opts={"width": "1560px", "height": "600px"})
+        .add_xaxis(xaxis_data=list(x_data))
+        .set_global_opts(
+            title_opts=opts.TitleOpts(
+                title=title, subtitle=subtitle, pos_left="center"
+            ),
+            tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
+            legend_opts=opts.LegendOpts(pos_top="bottom"),
+            yaxis_opts=opts.AxisOpts(
+                type_="value",
+                max_=100,
+                axislabel_opts=opts.LabelOpts(formatter="{value} %"),
+            ),
+        )
+    )
+
+    # Loop through the CALCULATED PERCENTAGES
+    for i in range(len(percentages)):
+        line.add_yaxis(
+            series_name=names[i],
+            y_axis=percentages[i].tolist(),  # Use the percentage data
+            stack="Total",
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.7),
             is_symbol_show=False,
         )
 

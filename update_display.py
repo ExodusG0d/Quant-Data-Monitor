@@ -12,6 +12,7 @@ from utils import (
     plot_dual_y_line_chart,
     plot_lines_chart,
     plot_stacked_area_chart,
+    plot_100_percent_stacked_area_chart,
     load_speed_of_indus,
     load_speed_of_barra,
 )
@@ -135,7 +136,7 @@ if __name__ == "__main__":
                 x_data=hist_bench_df["date"].values[-250:],
                 ys_data=all_daily_volumeRMB,
                 names=[
-                    f"{name}成交金额堆积"
+                    f"{name}"
                     for name in [
                         "沪深300",
                         "中证500",
@@ -144,6 +145,25 @@ if __name__ == "__main__":
                     ]
                 ],
                 title="各指数成交金额堆积"
+            )
+        }
+    )
+
+    combined_fig.update(
+        {
+            "base": plot_100_percent_stacked_area_chart(
+                x_data=hist_bench_df["date"].values[-250:],
+                ys_data=all_daily_volumeRMB,
+                names=[
+                    f"{name}"
+                    for name in [
+                        "沪深300",
+                        "中证500",
+                        "中证1000",
+                        "中证2000",
+                    ]
+                ],
+                title="各指数成交金额占比"
             )
         }
     )
